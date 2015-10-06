@@ -30,14 +30,9 @@ public class OceanQuakeMarker extends EarthquakeMarker {
 		// and how it is set in the EarthquakeMarker constructor
 		
 		// TODO: Implement this method
-		float length=0;
-		if(this.getMagnitude()>=5)			
-			length=10;
-		else if(this.getMagnitude()>=4 && this.getMagnitude()<5)
-			length=7;
-		else if(this.getMagnitude()<4)
-			length=4;
-		pg.rect(x,y,length,length);
+		//float length=2*this.getSize();
+		
+		pg.rect(x,y,2*radius,2*radius);
 		
 	}
 	

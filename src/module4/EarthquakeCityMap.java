@@ -80,7 +80,7 @@ public class EarthquakeCityMap extends PApplet {
 		//earthquakesURL = "test2.atom";
 		
 		// WHEN TAKING THIS QUIZ: Uncomment the next line
-		earthquakesURL = "quiz1.atom";
+		//earthquakesURL = "quiz1.atom";
 		
 		
 		// (2) Reading in earthquake data and geometric properties
@@ -164,6 +164,11 @@ public class EarthquakeCityMap extends PApplet {
 		fill(255,0,0);
 		ellipse(55, 235, 10, 10);
 		
+		noFill();
+		ellipse(55, 255, 10, 10);
+		line(50, 250, 60, 260);
+		line(60, 250, 50, 260);
+		
 		fill(0, 0, 0);
 		text("city Marker", 75, 100);
 		text("Land Quake", 75, 120);
@@ -172,6 +177,7 @@ public class EarthquakeCityMap extends PApplet {
 		text("Shallow", 75, 195);
 		text("Intermidiate", 75, 215);
 		text("Deep", 75, 235);
+		text("Past Hour", 75, 255);
 
 		
 	}

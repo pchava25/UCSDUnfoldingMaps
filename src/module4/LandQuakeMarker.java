@@ -33,21 +33,10 @@ public class LandQuakeMarker extends EarthquakeMarker {
 		// and how it is set in the EarthquakeMarker constructor
 		
 		// TODO: Implement this method
-		float radius=0;
-		if(this.getMagnitude()>=5)			
-			radius=10;
-		else if(this.getMagnitude()>=4 && this.getMagnitude()<5)
-			radius=7;
-		else if(this.getMagnitude()<4)
-		radius=4;
-//		pg.fill(red);
-		//System.out.println(this.getProperty("Age"));
-		//if(this.getProperty("Age")=="Past Hour")
-		//{
-			//pg.line(x, y, x+radius, y+radius);
-			//pg.line(x+radius, y+radius, x, y);
+		//float radius=this.getSize();
+		pg.ellipse(x, y, 2*radius, 2*radius);
+		
 		//}
-		pg.ellipse(x, y, radius, radius);
 	}
 	
 
