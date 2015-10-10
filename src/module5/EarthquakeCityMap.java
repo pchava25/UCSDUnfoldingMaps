@@ -146,6 +146,25 @@ public class EarthquakeCityMap extends PApplet {
 	private void selectMarkerIfHover(List<Marker> markers)
 	{
 		// TODO: Implement this method
+		for(Marker marker:markers)
+			{			
+				if(lastSelected!=null)
+				{
+					if((lastSelected.isInside(map,mouseX,mouseY)))
+					{
+						break;
+					}
+				}
+				if(marker.isInside(map,mouseX,mouseY))
+				{
+					marker.setSelected(true);		
+					lastSelected=(CommonMarker)marker;
+				}
+				else
+				{
+					marker.setSelected(false);
+				}
+		}
 	}
 	
 	/** The event handler for mouse clicks
@@ -159,9 +178,88 @@ public class EarthquakeCityMap extends PApplet {
 		// TODO: Implement this method
 		// Hint: You probably want a helper method or two to keep this code
 		// from getting too long/disorganized
+		if (lastClicked != null) {
+			unhideMarkers();
+			lastClicked.setSelected(false);
+			lastClicked = null;
+		
+		}
+		//checkCitiesForClick();
+		selectMarkerIfClicked(quakeMarkers);
+		selectMarkerIfClicked(cityMarkers);
+		
+	}
+	private void checkCitiesForClick()
+	{
+	    if (lastClicked != null) 
+	        return;
+	    for (Marker marker : cityMarkers) 
+	    {
+	        if (!marker.isHidden() &&
+	            marker.isInside(map, mouseX, mouseY) &&
+	            lastClicked == null)
+	        {
+	            lastClicked = (CommonMarker)marker;
+	        }
+	        else {
+	            marker.setHidden(true);
+	        }
+	    }
+	   
 	}
 	
+	private void selectMarkerIfClicked(List<Marker> markers)
+	{	
+		for(Marker marker : markers)
+		{		
+			
+			if(marker.isInside(map, mouseX, mouseY))
+			{
+				hideMarkers();
+				marker.setHidden(false);
+				lastClicked=(CommonMarker)marker;
+				if(isCityMarker(marker))
+				{
+					//System.out.println(marker.getClass().getSimpleName());
+					earthquakesContainCityInThreatCircle(marker);
+				}
+				else
+				{
+					citiesInEarthquakeThreatCircle(marker);					
+				}				
+			}			
+		}		
+	}
 	
+	private boolean isCityMarker(Marker marker)
+	{
+		if(marker.getClass().equals(CityMarker.class))
+			return true;
+		else
+			return false;		
+	}
+	private void citiesInEarthquakeThreatCircle(Marker marker)
+	{
+		EarthquakeMarker eqMarker = (EarthquakeMarker)marker;
+				for(Marker c : cityMarkers)
+				{
+					if(marker.getDistanceTo(c.getLocation())<=eqMarker.threatCircle())
+					{
+					c.setHidden(false);
+					}
+				}		
+	}
+	private void earthquakesContainCityInThreatCircle(Marker marker)
+	{		
+			for(Marker q : quakeMarkers)
+			{
+				EarthquakeMarker eqMarker = (EarthquakeMarker)q;
+				if(q.getDistanceTo(marker.getLocation())<=eqMarker.threatCircle())
+				{
+					q.setHidden(false);
+				}
+			}							
+	}
 	// loop over and unhide all markers
 	private void unhideMarkers() {
 		for(Marker marker : quakeMarkers) {
@@ -172,11 +270,20 @@ public class EarthquakeCityMap extends PApplet {
 			marker.setHidden(false);
 		}
 	}
-	
+	private void hideMarkers() {
+		for(Marker marker : quakeMarkers) {
+			marker.setHidden(true);
+		}
+			
+		for(Marker marker : cityMarkers) {
+			marker.setHidden(true);
+		}
+	}
 	// helper method to draw key in GUI
 	private void addKey() {	
 		// Remember you can use Processing's graphics methods here
 		fill(255, 250, 240);
+		
 		
 		int xbase = 25;
 		int ybase = 50;
