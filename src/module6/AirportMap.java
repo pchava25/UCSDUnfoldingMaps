@@ -26,6 +26,9 @@ public class AirportMap extends PApplet {
 	UnfoldingMap map;
 	private List<Marker> airportList;
 	List<Marker> routeList;
+	private CommonMarker lastSelected;
+	private CommonMarker lastClicked;
+	
 	
 	public void setup() {
 		// setting up PAppler
@@ -47,8 +50,11 @@ public class AirportMap extends PApplet {
 			AirportMarker m = new AirportMarker(feature);
 	
 			m.setRadius(5);
-			airportList.add(m);
-			
+			if(m.getAltitude()>2000)
+			{
+				airportList.add(m);
+				//System.out.println(m.getAltitude());
+			}
 			// put airport in hashmap with OpenFlights unique id for key
 			airports.put(Integer.parseInt(feature.getId()), feature.getLocation());
 		
@@ -71,27 +77,152 @@ public class AirportMap extends PApplet {
 			}
 			
 			SimpleLinesMarker sl = new SimpleLinesMarker(route.getLocations(), route.getProperties());
-		
-			System.out.println(sl.getProperties());
+			AirportMarker.routes.add(sl);
+			//System.out.println(sl.getProperties());
 			
 			//UNCOMMENT IF YOU WANT TO SEE ALL ROUTES
-			//routeList.add(sl);
+			routeList.add(sl);
+			
 		}
 		
 		
-		
 		//UNCOMMENT IF YOU WANT TO SEE ALL ROUTES
-		//map.addMarkers(routeList);
-		
+		map.addMarkers(routeList);
 		map.addMarkers(airportList);
+
+		hideRouteMarkers();
+		
 		
 	}
-	
+	private void hideRouteMarkers()
+	{
+		for(Marker r:routeList)
+		{
+			r.setHidden(true);
+		}
+		
+	}
+	private int getRoutesGoingOut(Marker m)
+	{
+		int count=0;
+		for(Marker r:routeList)
+		{
+			if(r.getProperty("source").equals(m.getProperty("id")))
+			{
+				count++;
+			}
+		}
+		return count;
+		
+	}
+	private int getRoutesComingIn(Marker m)
+	{
+		int count=0;
+		for(Marker r:routeList)
+		{
+			if(r.getProperty("destination").equals(m.getProperty("id")))
+			{
+				count++;
+			}
+		}
+		return count;
+		
+	}
 	public void draw() {
 		background(0);
 		map.draw();
 		
 	}
+	@Override
+	public void mouseMoved()
+	{
+		// clear the last selection
+		if (lastSelected != null) {
+			lastSelected.setSelected(false);
+			lastSelected = null;
+		
+		}
+		selectMarkerIfHover(airportList);
+		
+		//loop();
+	}
 	
-
+	// If there is a marker selected 
+	private void selectMarkerIfHover(List<Marker> markers)
+	{
+		// Abort if there's already a marker selected
+		if (lastSelected != null) {
+			return;
+		}
+		
+		for (Marker m : markers) 
+		{
+			CommonMarker marker = (CommonMarker)m;
+			if (marker.isInside(map,  mouseX, mouseY)) {
+				lastSelected = marker;
+				marker.setSelected(true);
+				return;
+			}
+		}
+	}
+	
+	
+	@Override
+	public void mouseClicked()
+	{
+		if (lastClicked != null) {
+			unhideAirportMarkers();
+			hideRouteMarkers();
+			lastClicked = null;
+		}
+		else if (lastClicked == null) 
+		{
+			checkAirportsForClick();
+			
+		}
+	}
+	private void checkAirportsForClick()
+	{
+		if (lastClicked != null) return;
+		// Loop over the earthquake markers to see if one of them is selected
+		
+		for (Marker m : airportList) {
+			AirportMarker marker = (AirportMarker)m;
+			//System.out.println(AirportMarker.routes.size());
+			if (!marker.isHidden() && marker.isInside(map, mouseX, mouseY)) {
+				hideAirportMarkers();
+				
+				marker.setHidden(false);
+				lastClicked = marker;
+				// Hide all the other earthquakes and hide
+				
+				for (Marker rshow : routeList) {
+					//System.out.println(rshow.getProperty("source"));
+					//System.out.println(marker.getProperty("id"));
+					if (rshow.getProperty("source").equals(marker.getProperty("id"))) {
+						rshow.setHidden(false);
+					}						
+				}
+				
+				return;
+				
+				
+				
+			}
+		}
+	}
+	private void hideAirportMarkers() {
+		for(Marker marker : airportList) {
+			marker.setHidden(true);
+		}
+			
+	
+	}
+	
+	private void unhideAirportMarkers() {
+		for(Marker marker : airportList) {
+			marker.setHidden(false);
+		}			
+		
+	}
 }

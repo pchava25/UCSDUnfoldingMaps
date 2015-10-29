@@ -163,6 +163,7 @@ public class ParseFeed {
 			
 			// get other fields from csv
 			point.addProperty("name", columns[1]);
+			point.addProperty("id", columns[0]);
 			point.putProperty("city", columns[2]);
 			point.putProperty("country", columns[3]);
 			
@@ -175,6 +176,7 @@ public class ParseFeed {
 			else if(!columns[5].equals("")) {
 				point.putProperty("code", columns[5]);
 			}
+			
 			
 			point.putProperty("altitude", columns[8 + i]);
 			
